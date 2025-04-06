@@ -8,4 +8,6 @@ resources:
   - service.yaml
   - deployment.yaml
   - pvc.yaml
-  - ingress.yaml 
+  - traefik-crds.yaml
+  - ingress.yaml
+  - configmap.yaml
