@@ -1,0 +1,9 @@
+# Configure reverse proxy settings
+default_config:
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 10.42.0.0/16  # Trust the entire cluster CIDR
+    - 127.0.0.1
+    - ::1 
