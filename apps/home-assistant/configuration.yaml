@@ -8,4 +8,8 @@ http:
   trusted_proxies:
     - 10.42.0.0/16  # Trust the entire cluster CIDR
     - 127.0.0.1
-    - ::1 
+    - ::1
+
+homeassistant:
+  allowlist_external_dirs:
+    - /external 
