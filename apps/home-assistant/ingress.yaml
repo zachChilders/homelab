@@ -54,7 +54,7 @@ spec:
     - web
   routes:
     - kind: Rule
-      match: Host(`home.local`)
+      match: Host(`home.local`) 
       services:
         - name: home-assistant
           port: 8123
