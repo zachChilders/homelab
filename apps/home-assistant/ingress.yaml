@@ -54,26 +54,7 @@ spec:
     - web
   routes:
     - kind: Rule
-      match: Host(`home.local`) && PathPrefix(`/`)
-      middlewares:
-        - name: home-assistant-headers
-          namespace: home-assistant
+      match: Host(`home.local`)
       services:
         - name: home-assistant
           port: 8123
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: home-assistant-config
-  namespace: home-assistant
-data:
-  configuration.yaml: |
-    # Configure reverse proxy settings
-    http:
-      use_x_forwarded_for: true
-      trusted_proxies:
-        - 10.42.0.0/16  # Trust the entire cluster CIDR
-        - 127.0.0.1
-        - ::1
