@@ -4,10 +4,7 @@ kind: Kustomization
 namespace: home-assistant
 
 resources:
-  - namespace.yaml
   - service.yaml
   - deployment.yaml
-  - pvc.yaml
-  - traefik-crds.yaml
   - ingress.yaml
-  - configmap.yaml
+  - middleware.yaml
