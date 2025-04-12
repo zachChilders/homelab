@@ -11,4 +11,4 @@ The same script is used to add nodes, but you need to set envvars on subsequent 
 
 ## Applying this repo
 
-`kubectl apply -k apps/home-assistant`
+`kubectl apply -k .
