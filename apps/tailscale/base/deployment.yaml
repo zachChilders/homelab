@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tailscale-exit-node
+  namespace: tailscale
+spec:
+  selector:
+    matchLabels:
+      app: tailscale-exit-node
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: tailscale-exit-node
+    spec:
+      hostNetwork: true
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+        - 10.43.0.10  # This is typically the cluster DNS service IP
+        searches:
+        - tailscale.svc.cluster.local
+        - svc.cluster.local
+        - cluster.local
+        options:
+        - name: ndots
+          value: "5"
+      serviceAccountName: tailscale
+      containers:
+      - name: tailscale
+        image: tailscale/tailscale:v1.60
+        securityContext:
+          privileged: true
+        env:
+        - name: TS_AUTH_KEY
+          valueFrom:
+            secretKeyRef:
+              name: tailscale-auth
+              key: auth-key
+        - name: TS_USERSPACE
+          value: "false"
+        - name: TS_ROUTES
+          value: "0.0.0.0/0,::/0"
+        - name: TS_HOST
+          value: "tailscale-exit-node"
+        - name: TS_EXTRA_ARGS
+          value: "--advertise-exit-node"
+        - name: KUBERNETES_SERVICE_HOST
+          value: "kubernetes.default.svc"
+        - name: KUBERNETES_SERVICE_PORT
+          value: "443"
+        volumeMounts:
+        - name: state
+          mountPath: /var/lib/tailscale
+      volumes:
+      - name: state
+        emptyDir: {} 
