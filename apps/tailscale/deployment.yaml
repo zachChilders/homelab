@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tailscale-exit-node
-  namespace: tailscale
+  namespace: infra
 spec:
   selector:
     matchLabels:
