@@ -15,7 +15,7 @@ This directory contains the Kubernetes configuration for deploying a Tailscale e
 1. Create a Kubernetes secret with your Tailscale auth key:
    ```bash
    kubectl create secret generic tailscale-auth \
-     --namespace=tailscale \
+     --namespace=infra \
      --from-literal=auth-key='your-auth-key-here'
    ```
 
