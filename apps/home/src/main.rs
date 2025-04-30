@@ -17,9 +17,12 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    // Build our application with a route
+    // Build our application with routes nested under /api
+    let api_router = Router::new()
+        .route("/", get(handler));
+
     let app = Router::new()
-        .route("/", get(handler))
+        .nest("/api", api_router)
         .layer(TraceLayer::new_for_http());
 
     // Get port from environment variable or use default
