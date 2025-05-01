@@ -1,7 +1,7 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: home-app
+  name: bear-detector-app
 spec:
   entryPoints:
     - web
@@ -9,5 +9,5 @@ spec:
     - kind: Rule
       match: Host(`home.local`) && PathPrefix(`/api`)
       services:
-        - name: api/home-app
+        - name: api/bear-detector-app
           port: 3000
