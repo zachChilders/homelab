@@ -3,10 +3,12 @@ from pydantic import BaseModel
 import uvicorn
 import cv2
 import numpy as np
-from fastapi.responses import StreamingResponse
-import io
 import os
-from pathlib import Path
+from openai import OpenAI
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 app = FastAPI(
     title="Home API",
@@ -17,20 +19,13 @@ app = FastAPI(
 class HealthResponse(BaseModel):
     status: str
 
+class BearDetectionResponse(BaseModel):
+    contains_bear: bool
+    confidence: float
+
 @app.get("/", response_model=HealthResponse)
 async def health_check():
     return {"status": "healthy"}
-
-@app.get("/opencv-test")
-async def opencv_test():
-    # Create a simple image with OpenCV
-    img = np.zeros((300, 300, 3), dtype=np.uint8)
-    img[:] = (0, 255, 0)  # Fill with green color
-    cv2.putText(img, "OpenCV Test", (50, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
-    
-    # Convert image to bytes
-    _, buffer = cv2.imencode('.png', img)
-    return StreamingResponse(io.BytesIO(buffer.tobytes()), media_type="image/png")
 
 def extract_key_frames(video_path: str, output_dir: str = "key_frames", abs_threshold: float = 0.85, rel_threshold: float = 1.5, min_time_diff: float = 0.5, window_size: int = 10):
     """
@@ -147,6 +142,49 @@ def extract_key_frames(video_path: str, output_dir: str = "key_frames", abs_thre
     
     cap.release()
     return saved_count
+
+
+def analyze_image_with_openai(image_path: str) -> BearDetectionResponse:
+    """
+    Check if an image contains a bear using OpenAI's Vision API.
+    
+    Args:
+        image_path (str): Path to the image file
+        
+    Returns:
+        BearDetectionResponse: Response containing bear detection result and confidence
+    """
+    # Initialize OpenAI client
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    
+    # Read the image file and encode it in base64
+    with open(image_path, "rb") as image_file:
+        import base64
+        base64_image = base64.b64encode(image_file.read()).decode('utf-8')
+        
+        # Send the image to OpenAI
+        response = client.responses.create(
+            model="gpt-4.1",
+            input=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": "Does this image contain a bear? Respond with a JSON object containing 'contains_bear' (boolean) and 'confidence' (float between 0 and 1)."},
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/png;base64,{base64_image}"
+                            }
+                        }
+                    ]
+                }
+            ],
+            text_format=BearDetectionResponse,
+            max_tokens=50
+        )
+    
+    # Parse and validate the response
+    return BearDetectionResponse.model_validate_json(response.output_text)
 
 def main():
     uvicorn.run("src.main:app", host="0.0.0.0", port=3030, reload=True)
