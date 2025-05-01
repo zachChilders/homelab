@@ -1,33 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: home-app
+  name: bear-detector-app
   labels:
-    app: home-app
+    app: bear-detector-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: home-app
+      app: bear-detector-app
   template:
     metadata:
       labels:
-        app: home-app
+        app: bear-detector-app
     spec:
       imagePullSecrets:
       - name: acr-secret
       containers:
-      - name: home-app
-        image: homelabratory.azurecr.io/home-app:v1
+      - name: bear-detector-app
+        image: homelabratory.azurecr.io/bear-detector-app:v1
         imagePullPolicy: Always
         ports:
-        - containerPort: 3000
+        - containerPort: 3030
           name: http
         env:
         - name: PORT
-          value: "3000"
-        - name: RUST_LOG
-          value: "info"
+          value: "3030"
         resources:
           requests:
             cpu: "100m"

@@ -1,4 +1,4 @@
-# Home FastAPI Application
+# Bear Detector
 
 A simple FastAPI web application with a health check endpoint and OpenAPI documentation.
 
@@ -16,7 +16,7 @@ poetry install
 
 3. Run the application:
 ```bash
-poetry run uvicorn home.main:app --reload
+poetry run uvicorn .main:app --reload
 ```
 
 ## API Documentation

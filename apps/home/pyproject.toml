@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "home"
+name = "bear-detection"
 version = "0.1.0"
 description = "A FastAPI web application"
 authors = ["Your Name <your.email@example.com>"]
