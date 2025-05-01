@@ -7,6 +7,8 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     curl \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Poetry
@@ -17,13 +19,13 @@ COPY pyproject.toml poetry.lock* ./
 
 # Install dependencies
 RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi
+    && poetry install --no-interaction --no-ansi --no-root
 
 # Copy the rest of the application
 COPY . .
 
 # Set environment variables
-ENV PORT=3000
+ENV PORT=3030
 
 # Expose the port
 EXPOSE $PORT
@@ -33,4 +35,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:$PORT/ || exit 1
 
 # Run the application with uvicorn
-CMD ["poetry", "run", "uvicorn", "home.main:app", "--host", "0.0.0.0", "--port", "3000"] 
+CMD ["poetry", "run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "3030"] 
