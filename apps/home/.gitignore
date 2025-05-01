@@ -1,2 +1,4 @@
 target
 .pytest_cache
+tests/output
+.DS_Store
