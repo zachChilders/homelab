@@ -1,7 +1,6 @@
 import os
 import pytest
-from src.main import extract_key_frames
-import cv2
+from src.video_processor import extract_key_frames
 
 def test_extract_key_frames():
     # Test video path
