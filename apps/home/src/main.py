@@ -11,8 +11,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = FastAPI(
-    title="Bear Detector API",
-    description="A simple FastAPI application",
+    title="Bear Detector",
+    description="Detects bears in security camera videos",
     version="1.0.0"
 )
 
