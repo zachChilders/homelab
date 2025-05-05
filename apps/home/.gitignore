@@ -3,3 +3,4 @@ target
 tests/output
 .DS_Store
 .env
+k8s/secrets.yaml

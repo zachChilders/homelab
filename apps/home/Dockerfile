@@ -26,6 +26,9 @@ COPY . .
 
 # Set environment variables
 ENV PORT=3030
+ENV VIDEO_PATH=""
+ENV OPENAI_API_KEY=""
+ENV WEBHOOK=""
 
 # Expose the port
 EXPOSE $PORT

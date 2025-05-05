@@ -51,7 +51,6 @@ def analyze_image_with_openai(image_path: str) -> BearDetectionResponse:
 
     # Parse the response text as JSON and validate with Pydantic
     response_text = response.choices[0].message.content
-    logger.debug(f"Raw API response: {response_text}")
     
     # Strip markdown code block syntax if present
     if response_text.startswith("```json"):

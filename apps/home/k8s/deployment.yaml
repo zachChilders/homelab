@@ -27,11 +27,17 @@ spec:
         - name: PORT
           value: "3030"
         - name: WEBHOOK
-          value: "https://discord.com/api/webhooks/1234567890/abcdefghijklmnopqrstuvwxyz"
+          valueFrom:
+            secretKeyRef:
+              name: bear-detector-secrets
+              key: WEBHOOK
         - name: VIDEO_PATH
           value: "/external/media"
         - name: OPENAI_API_KEY
-          value: "sk-proj-1234567890/abcdefghijklmnopqrstuvwxyz"
+          valueFrom:
+            secretKeyRef:
+              name: bear-detector-secrets
+              key: OPENAI_API_KEY
         resources:
           requests:
             cpu: "100m"
