@@ -38,13 +38,17 @@ spec:
             secretKeyRef:
               name: bear-detector-secrets
               key: OPENAI_API_KEY
+        volumeMounts:
+        - name: media-volume
+          mountPath: /external/media
+          readOnly: true
         resources:
           requests:
             cpu: "100m"
-            memory: "128Mi"
+            memory: "256Mi"
           limits:
             cpu: "200m"
-            memory: "256Mi"
+            memory: "512Mi"
         readinessProbe:
           httpGet:
             path: /api
@@ -56,4 +60,9 @@ spec:
             path: /api
             port: http
           initialDelaySeconds: 15
-          periodSeconds: 20 
+          periodSeconds: 20
+      volumes:
+      - name: media-volume
+        persistentVolumeClaim:
+          claimName: media-pvc
+          readOnly: true 
