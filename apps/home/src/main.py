@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 
 from .file_watcher import watch_folder
-from .config import VIDEO_PATH, FRAMES_PATH
+from .config import VIDEO_PATH
 
 app = FastAPI(
     title="Bear Detector",
@@ -30,18 +30,18 @@ def main():
         if not os.path.isdir(video_path):
             raise ValueError(f"VIDEO_PATH {video_path} is not a directory")
 
+        # Create key_frames directory if it doesn't exist
+        frames_path = os.path.join(video_path, "key_frames")
+        os.makedirs(frames_path, exist_ok=True)
+
         video_watcher_thread = threading.Thread(
             target=watch_folder,
-            args=(video_path, "key_frames", "video"),
+            args=(video_path, frames_path, "video"),
             daemon=True
         )
         video_watcher_thread.start()
 
-    # Start the image file watcher in a separate thread
-    frames_path = FRAMES_PATH
-    if frames_path:
-        if not os.path.exists(frames_path):
-            raise ValueError(f"FRAMES_PATH {frames_path} does not exist")
+        # Start the image file watcher in a separate thread
         if not os.path.isdir(frames_path):
             raise ValueError(f"FRAMES_PATH {frames_path} is not a directory")
 

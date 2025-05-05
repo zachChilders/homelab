@@ -1,11 +1,13 @@
 import logging
 import time
+import requests
 
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 from .image_analyzer import analyze_image_with_openai
 from .video_processor import extract_key_frames
+from .config import WEBHOOK
 
 # Configure logging
 logging.basicConfig(
@@ -41,6 +43,9 @@ class ImageFileHandler(FileSystemEventHandler):
             try:
                 result = analyze_image_with_openai(event.src_path)
                 logging.info(f"Analysis result for {event.src_path}: contains_bear={result.contains_bear}, confidence={result.confidence}")
+
+                if result.contains_bear:
+                    requests.post(WEBHOOK, json={"message": f"Bear detected in {event.src_path}"})
             except Exception as e:
                 logging.error(f"Error analyzing {event.src_path}: {e!s}")
 

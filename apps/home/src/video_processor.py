@@ -64,8 +64,7 @@ def extract_key_frames(video_path: str, output_dir: str = "key_frames", abs_thre
 
         # For the first frame, save it and continue
         if prev_frame is None:
-            output_path = os.path.join(output_dir, f"frame_{saved_count:04d}.png")
-            cv2.imwrite(output_path, frame)
+            key_frame_found(video_path, output_dir, saved_count, frame)
             saved_count += 1
             prev_frame = frame
             prev_hash = compute_phash(frame)
@@ -107,8 +106,7 @@ def extract_key_frames(video_path: str, output_dir: str = "key_frames", abs_thre
 
         # Save frame if it's a key frame and enough time has passed
         if is_key_frame and (frame_count - last_key_frame) >= min_frames_diff:
-            output_path = os.path.join(output_dir, f"frame_{saved_count:04d}.png")
-            cv2.imwrite(output_path, frame)
+            key_frame_found(video_path, output_dir, saved_count, frame)
             saved_count += 1
             last_key_frame = frame_count
 
@@ -119,3 +117,16 @@ def extract_key_frames(video_path: str, output_dir: str = "key_frames", abs_thre
 
     cap.release()
     return saved_count
+
+def key_frame_found(video_path, output_dir, saved_count, frame):
+    """
+    Save the key frame to the output directory.
+    """
+    # create a directory based on teh input video name
+    video_name = os.path.basename(video_path)
+    video_name = os.path.splitext(video_name)[0]
+    output_dir = os.path.join(output_dir, video_name)
+    os.makedirs(output_dir, exist_ok=True)
+
+    output_path = os.path.join(output_dir, f"{video_name}_{saved_count:04d}.png")
+    cv2.imwrite(output_path, frame)
