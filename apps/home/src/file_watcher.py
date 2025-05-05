@@ -59,14 +59,18 @@ def watch_folder(path: str, output_dir: str = None, handler_type: str = "video")
     """
     if handler_type == "video":
         event_handler = VideoFileHandler(output_dir)
+        watch_path = path
+        recursive = False
     else:
         event_handler = ImageFileHandler()
+        watch_path = output_dir or path
+        recursive = True  # Watch recursively for key frames in subdirectories
 
     observer = Observer()
-    observer.schedule(event_handler, path, recursive=False)
+    observer.schedule(event_handler, watch_path, recursive=recursive)
     observer.start()
 
-    logging.info(f"Started watching folder: {path} for {handler_type} files")
+    logging.info(f"Started watching folder: {watch_path} for {handler_type} files (recursive={recursive})")
 
     try:
         while True:
