@@ -1,10 +1,13 @@
 import base64
+import json
+import logging
 
 from openai import OpenAI
 from pydantic import BaseModel
 
 from .config import OPENAI_API_KEY
 
+logger = logging.getLogger(__name__)
 
 class BearDetectionResponse(BaseModel):
     contains_bear: bool
@@ -27,9 +30,9 @@ def analyze_image_with_openai(image_path: str) -> BearDetectionResponse:
         base64_image = base64.b64encode(image_file.read()).decode('utf-8')
 
         # Send the image to OpenAI
-        response = client.responses.create(
-            model="gpt-4.1",
-            input=[
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
                 {
                     "role": "user",
                     "content": [
@@ -43,9 +46,25 @@ def analyze_image_with_openai(image_path: str) -> BearDetectionResponse:
                     ]
                 }
             ],
-            text_format=BearDetectionResponse,
             max_tokens=50
         )
 
-    # Parse and validate the response
-    return BearDetectionResponse.model_validate_json(response.output_text)
+    # Parse the response text as JSON and validate with Pydantic
+    response_text = response.choices[0].message.content
+    logger.debug(f"Raw API response: {response_text}")
+    
+    # Strip markdown code block syntax if present
+    if response_text.startswith("```json"):
+        response_text = response_text[7:]  # Remove ```json
+    if response_text.startswith("```"):
+        response_text = response_text[3:]  # Remove ```
+    if response_text.endswith("```"):
+        response_text = response_text[:-3]  # Remove trailing ```
+    response_text = response_text.strip()
+    
+    try:
+        response_json = json.loads(response_text)
+        return BearDetectionResponse(**response_json)
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse JSON response: {response_text}")
+        raise
