@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: bear-detector-app
+  namespace: home-assistant
   labels:
     app: bear-detector-app
 spec:
@@ -32,16 +33,17 @@ spec:
               name: bear-detector-secrets
               key: WEBHOOK
         - name: VIDEO_PATH
-          value: "/external/media"
+          value: "/input"
         - name: OPENAI_API_KEY
           valueFrom:
             secretKeyRef:
               name: bear-detector-secrets
               key: OPENAI_API_KEY
         volumeMounts:
-        - name: media-volume
-          mountPath: /external/media
-          readOnly: true
+        - name: input-data
+          mountPath: /input
+        - name: output-data
+          mountPath: /output
         resources:
           requests:
             cpu: "100m"
@@ -51,18 +53,34 @@ spec:
             memory: "512Mi"
         readinessProbe:
           httpGet:
-            path: /api
+            path: /
             port: http
           initialDelaySeconds: 5
           periodSeconds: 10
         livenessProbe:
           httpGet:
-            path: /api
+            path: /
             port: http
           initialDelaySeconds: 15
           periodSeconds: 20
       volumes:
-      - name: media-volume
+      - name: input-data
         persistentVolumeClaim:
-          claimName: media-pvc
-          readOnly: true 
+          claimName: home-assistant-external
+          readOnly: true
+      - name: output-data
+        persistentVolumeClaim:
+          claimName: bear-detector-output
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bear-detector-output
+  namespace: home-assistant
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: local-path
