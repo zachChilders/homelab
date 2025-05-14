@@ -1,0 +1,6 @@
+target
+.pytest_cache
+tests/output
+.DS_Store
+.env
+k8s/secrets.yaml
