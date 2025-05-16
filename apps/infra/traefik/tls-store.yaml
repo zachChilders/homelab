@@ -1,0 +1,30 @@
+apiVersion: traefik.io/v1alpha1
+kind: TLSOption
+metadata:
+  name: default
+  namespace: kube-system
+spec:
+  minVersion: VersionTLS12
+  sniStrict: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: TLSStore
+metadata:
+  name: default
+  namespace: kube-system
+spec:
+  defaultCertificate:
+    secretName: home-local-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: home-local
+  namespace: kube-system
+spec:
+  secretName: home-local-tls
+  issuerRef:
+    name: letsencrypt-staging
+    kind: ClusterIssuer
+  dnsNames:
+    - home.local 
