@@ -9,16 +9,47 @@ spec:
   routes:
     - kind: Rule
       match: Host(`home.local`) && PathPrefix(`/node-red`)
+      middlewares:
+        - name: node-red-redirect-scheme
       services:
         - name: node-red
           port: 1880
 ---
 apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: node-red-https
+  namespace: node-red
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`home.local`) && PathPrefix(`/node-red`)
+      middlewares:
+        - name: node-red-strip-prefix
+      services:
+        - name: node-red
+          port: 1880
+  tls:
+    secretName: home-local-tls
+---
+apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
-  name: node-red-stripprefix
+  name: node-red-redirect-scheme
+  namespace: node-red
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: node-red-strip-prefix
   namespace: node-red
 spec:
   stripPrefix:
     prefixes:
-      - /node-red
+      - /node-red 

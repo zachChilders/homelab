@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cert-manager
+  namespace: infra
+  labels:
+    app: cert-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cert-manager
+  template:
+    metadata:
+      labels:
+        app: cert-manager
+    spec:
+      serviceAccountName: cert-manager
+      containers:
+      - name: cert-manager
+        image: quay.io/jetstack/cert-manager-controller:v1.13.1
+        args:
+        - --v=2
+        - --cluster-resource-namespace=$(POD_NAMESPACE)
+        - --leader-election-namespace=kube-system
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cert-manager
+  namespace: infra
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cert-manager
+rules:
+- apiGroups: ["cert-manager.io"]
+  resources: ["certificates", "certificaterequests", "issuers", "clusterissuers"]
+  verbs: ["*"]
+- apiGroups: [""]
+  resources: ["secrets", "events", "configmaps", "services"]
+  verbs: ["*"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["get", "list", "watch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cert-manager
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cert-manager
+subjects:
+- kind: ServiceAccount
+  name: cert-manager
+  namespace: infra
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cert-manager-webhook
+  namespace: infra
+  labels:
+    app: cert-manager-webhook
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cert-manager-webhook
+  template:
+    metadata:
+      labels:
+        app: cert-manager-webhook
+    spec:
+      serviceAccountName: cert-manager
+      containers:
+      - name: cert-manager-webhook
+        image: quay.io/jetstack/cert-manager-webhook:v1.13.1
+        args:
+        - --v=2
+        - --secure-port=10250
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cert-manager-webhook
+  namespace: infra
+spec:
+  selector:
+    app: cert-manager-webhook
+  ports:
+  - port: 443
+    targetPort: 10250
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cert-manager-cainjector
+  namespace: infra
+  labels:
+    app: cert-manager-cainjector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cert-manager-cainjector
+  template:
+    metadata:
+      labels:
+        app: cert-manager-cainjector
+    spec:
+      serviceAccountName: cert-manager
+      containers:
+      - name: cert-manager-cainjector
+        image: quay.io/jetstack/cert-manager-cainjector:v1.13.1
+        args:
+        - --v=2 
