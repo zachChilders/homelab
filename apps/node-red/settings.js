@@ -17,6 +17,11 @@ module.exports = {
         origin: "*",
         methods: "GET,PUT,POST,DELETE"
     },
+    editorTheme: {
+        projects: {
+            enabled: true
+        }
+    },
     
     // Other standard settings
     functionGlobalContext: {},
