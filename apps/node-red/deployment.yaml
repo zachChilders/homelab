@@ -20,7 +20,7 @@ spec:
         - containerPort: 1880
         env:
         - name: TZ
-          value: "UTC"
+          value: "America/Los_Angeles"
         volumeMounts:
         - name: node-red-data
           mountPath: /data
