@@ -19,7 +19,7 @@ spec:
       - name: acr-secret
       containers:
       - name: bear-detector-app
-        image: homelabratory.azurecr.io/bear-detector-app:v1
+        image: homelabratory.azurecr.io/bear-detector-app:v2
         imagePullPolicy: Always
         ports:
         - containerPort: 3030
@@ -34,6 +34,8 @@ spec:
               key: WEBHOOK
         - name: VIDEO_PATH
           value: "/input"
+        - name: FRAMES_PATH
+          value: "/output"
         - name: OPENAI_API_KEY
           valueFrom:
             secretKeyRef:
@@ -53,13 +55,13 @@ spec:
             memory: "512Mi"
         readinessProbe:
           httpGet:
-            path: /
+            path: /health
             port: http
           initialDelaySeconds: 5
           periodSeconds: 10
         livenessProbe:
           httpGet:
-            path: /
+            path: /health
             port: http
           initialDelaySeconds: 15
           periodSeconds: 20

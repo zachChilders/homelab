@@ -31,7 +31,7 @@ def main():
             raise ValueError(f"VIDEO_PATH {video_path} is not a directory")
 
         # Create key_frames directory if it doesn't exist
-        frames_path = os.path.join(video_path, "key_frames")
+        frames_path = FRAMES_PATH
         os.makedirs(frames_path, exist_ok=True)
 
         video_watcher_thread = threading.Thread(
