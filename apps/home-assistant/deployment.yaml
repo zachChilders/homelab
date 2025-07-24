@@ -39,6 +39,9 @@ spec:
           mountPath: /dev/ttyAMA10
         - name: tty-usb0
           mountPath: /dev/ttyUSB0
+        - name: dbus
+          mountPath: /run/dbus
+          readOnly: true
         ports:
         - containerPort: 8123
       volumes:
@@ -59,6 +62,10 @@ spec:
         hostPath:
           path: /dev/ttyUSB0
           type: CharDevice
+      - name: dbus
+        hostPath:
+          path: /run/dbus
+          type: Directory
 
 ---
 apiVersion: v1

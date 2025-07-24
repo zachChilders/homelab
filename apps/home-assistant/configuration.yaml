@@ -13,3 +13,5 @@ http:
 homeassistant:
   allowlist_external_dirs:
     - /external 
+
+bluetooth:
