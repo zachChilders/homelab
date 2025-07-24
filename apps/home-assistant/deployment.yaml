@@ -25,6 +25,8 @@ spec:
           limits:
             cpu: 1000m
             memory: 1Gi
+        securityContext:
+          privileged: true
         volumeMounts:
         - name: config
           mountPath: /config
@@ -33,6 +35,10 @@ spec:
           subPath: configuration.yaml
         - name: external-data
           mountPath: /external
+        - name: tty-ama10
+          mountPath: /dev/ttyAMA10
+        - name: tty-usb0
+          mountPath: /dev/ttyUSB0
         ports:
         - containerPort: 8123
       volumes:
@@ -45,6 +51,14 @@ spec:
       - name: external-data
         persistentVolumeClaim:
           claimName: home-assistant-external
+      - name: tty-ama10
+        hostPath:
+          path: /dev/ttyAMA10
+          type: CharDevice
+      - name: tty-usb0
+        hostPath:
+          path: /dev/ttyUSB0
+          type: CharDevice
 
 ---
 apiVersion: v1
