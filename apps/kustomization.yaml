@@ -5,4 +5,3 @@ resources:
 - home-assistant
 - infra
 - node-red
-- tailscale
