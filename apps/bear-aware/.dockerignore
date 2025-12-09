@@ -1,0 +1,40 @@
+# Environment files
+.env*
+!.env.example
+
+# Git
+.git
+.gitignore
+
+# Node modules (if any)
+node_modules/
+npm-debug.log*
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Documentation
+README.md
+*.md
+!README.docker.md
+
+# Build artifacts
+dist/
+build/

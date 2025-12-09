@@ -4,5 +4,4 @@ kind: Kustomization
 resources:
 - home-assistant
 - infra
-- jellyfin
 - node-red

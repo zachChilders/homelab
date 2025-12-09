@@ -27,11 +27,8 @@ RUN poetry config virtualenvs.create false \
 # Copy the rest of the application
 COPY . .
 
-# Set environment variables
+# Set default port (other env vars should be set at runtime)
 ENV PORT=3030
-ENV VIDEO_PATH=""
-ENV OPENAI_API_KEY=""
-ENV WEBHOOK=""
 
 # Create and set permissions for the mount point
 RUN mkdir -p /external/media && chown -R appuser:appuser /external
